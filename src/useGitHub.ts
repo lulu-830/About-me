@@ -28,10 +28,15 @@ export interface GithubUser {
 
 const GITHUB_USERNAME = 'lulu-830';
 
+const token = import.meta.env.VITE_GITHUB_TOKEN as string | undefined;
+
 async function fetchGitHub<T>(path: string): Promise<T> {
-  const res = await fetch(`https://api.github.com${path}`, {
-    headers: { Accept: 'application/vnd.github+json' },
-  });
+  const headers: Record<string, string> = {
+    Accept: 'application/vnd.github+json',
+  };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`https://api.github.com${path}`, { headers });
   if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
   return res.json() as Promise<T>;
 }
