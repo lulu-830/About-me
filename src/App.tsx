@@ -12,27 +12,27 @@ import {
   Menu,
   X,
   ChevronDown,
-  Terminal,
-  Cpu,
-  Bug,
   Shield,
   Waves,
   Mountain,
+  Cpu,
   Languages,
   GraduationCap,
   Target,
+  RefreshCw,
+  Users,
+  BookOpen,
 } from 'lucide-react';
+import { useGitHubUser, useGitHubRepos, type GithubRepo } from './useGitHub';
 
 const profile = {
   name: 'David',
   username: 'lulu-830',
   title: 'Fachinformatiker für Systemintegration (Umschulung)',
   tagline: 'Automatisierung, Reverse Engineering & Systemnahe Programmierung – Lernend durch Projekte.',
-  location: 'Germany',
-  bio: 'Ich befinde mich im 1. Lehrjahr meiner Umschulung zum Fachinformatiker für Systemintegration und nutze GitHub, um meine Projekte und meinen Lernfortschritt zu teilen. Mein Fokus liegt auf Automatisierung, systemnaher Programmierung und Reverse Engineering. Aktuell lerne ich Python, um meine Automatisierungsprojekte zu erweitern. Mein Ziel nach der Ausbildung: IT-Sicherheit.',
+  bio: 'Ich befinde mich im 1. Lehrjahr meiner Umschulung zum Fachinformatiker für Systemintegration. Mein Fokus liegt auf Automatisierung, systemnaher Programmierung und Reverse Engineering. Aktuell lerne ich Python. Mein Ziel: IT-Sicherheit.',
   email: 'liebschwager.david97@gmail.com',
   github: 'https://github.com/lulu-830',
-  avatar: 'https://avatars.githubusercontent.com/u/302008009?v=4',
 };
 
 const skills = [
@@ -54,45 +54,21 @@ const techStack = [
   'Python (Lernend)', 'IT-Sicherheit (Ziel)',
 ];
 
-const projects = [
-  {
-    name: 'Fiesta-Online---Bot-Projekt',
-    description: 'Fiesta Bot in AutoIt – entstanden zu Lern- und Weiterbildungszwecken. Automatisierung, GUI-Entwicklung, Speicherzugriffe und komplexe Zustandsautomaten.',
-    language: 'AutoIt',
-    stars: 0,
-    forks: 0,
-    url: 'https://github.com/lulu-830/Fiesta-Online---Bot-Projekt',
-    topics: ['AutoIt', 'Automation', 'GUI', 'State Machine'],
-  },
-  {
-    name: 'Albion-Online---AHK-Makros',
-    description: 'Sammlung von AutoHotkey-Makros fuer wiederkehrende Aufgaben im Albion Online Marketplace. Skripte fuer Ausruestung, Offhands und Verkaufsangebote.',
-    language: 'AutoHotkey',
-    stars: 0,
-    forks: 0,
-    url: 'https://github.com/lulu-830/Albion-Online---AHK-Makros',
-    topics: ['AutoHotkey', 'Macros', 'Automation'],
-  },
-  {
-    name: 'Reverse-Engineering-Runtime-Analysis-Fiesta-Online',
-    description: 'Reverse Engineering, Binary Patching und Laufzeitanalyse mit x64dbg und Cheat Engine. Ausschliesslich zu Lern- und Demonstrationszwecken im Rahmen der Ausbildung.',
-    language: 'Assembly',
-    stars: 0,
-    forks: 0,
-    url: 'https://github.com/lulu-830/Reverse-Engineering-Runtime-Analysis-Fiesta-Online',
-    topics: ['Reverse Engineering', 'x64dbg', 'Cheat Engine', 'Binary Patching'],
-  },
-];
-
 const languageColors: Record<string, string> = {
   AutoIt: '#1C344B',
   AutoHotkey: '#34a853',
   Assembly: '#6E4C13',
   TypeScript: '#3178c6',
   Python: '#3572A5',
+  JavaScript: '#f1e05a',
+  Shell: '#89e051',
+  C: '#555555',
+  'C++': '#f34b7d',
+  HTML: '#e34c26',
+  CSS: '#563d7c',
 };
 
-const languages = [
+const spokenLanguages = [
   { name: 'Deutsch', level: 'Muttersprache', flag: '🇩🇪' },
   { name: 'Englisch', level: 'Fließend', flag: '🇬🇧' },
   { name: 'Spanisch', level: 'Fortgeschritten', flag: '🇪🇸' },
@@ -100,32 +76,14 @@ const languages = [
   { name: 'Französisch', level: 'Grundkenntnisse', flag: '🇫🇷' },
 ];
 
-const interests = [
-  { icon: 'Waves', label: 'Schwimmen' },
-  { icon: 'Mountain', label: 'Wandern' },
-  { icon: 'Cpu', label: 'Automatisierung' },
-  { icon: 'Shield', label: 'IT-Sicherheit' },
-];
-
-const stats = [
-  { label: 'Repositories', value: '3' },
-  { label: 'Lehrjahr', value: '1. Jahr' },
-  { label: 'Ausbildung', value: 'Systemintegration' },
-  { label: 'Weg', value: 'Umschulung' },
-];
-
 function Nav({ scrolled }: { scrolled: boolean }) {
   const [open, setOpen] = useState(false);
   const links = ['About', 'Skills', 'Projects', 'Contact'];
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#0d1117]/90 backdrop-blur-md border-b border-white/10'
-          : 'bg-transparent'
-      }`}
-    >
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled ? 'bg-[#0d1117]/90 backdrop-blur-md border-b border-white/10' : 'bg-transparent'
+    }`}>
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <a href="#hero" className="flex items-center gap-2 text-white font-bold text-lg">
           <Github className="w-6 h-6" />
@@ -133,7 +91,6 @@ function Nav({ scrolled }: { scrolled: boolean }) {
             {profile.name}
           </span>
         </a>
-
         <div className="hidden md:flex items-center gap-8">
           {links.map((link) => (
             <a
@@ -155,15 +112,10 @@ function Nav({ scrolled }: { scrolled: boolean }) {
             GitHub
           </a>
         </div>
-
-        <button
-          className="md:hidden text-white"
-          onClick={() => setOpen(!open)}
-        >
+        <button className="md:hidden text-white" onClick={() => setOpen(!open)}>
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
-
       {open && (
         <div className="md:hidden bg-[#0d1117] border-b border-white/10 px-6 py-4 flex flex-col gap-4">
           {links.map((link) => (
@@ -192,24 +144,22 @@ function Nav({ scrolled }: { scrolled: boolean }) {
 }
 
 function Hero() {
+  const { user } = useGitHubUser();
+
   return (
     <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16">
-      {/* Animated background grid */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
         backgroundImage: `linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)`,
         backgroundSize: '40px 40px',
       }} />
-
-      {/* Glow effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px]" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-[120px]" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-        {/* Avatar */}
         <div className="inline-block mb-8 relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full blur-md opacity-60 group-hover:opacity-100 transition-opacity duration-500" />
           <img
-            src={profile.avatar}
+            src={user?.avatar_url ?? `https://avatars.githubusercontent.com/u/302008009?v=4`}
             alt={profile.name}
             className="relative w-32 h-32 rounded-full border-2 border-white/20 object-cover"
           />
@@ -218,8 +168,7 @@ function Hero() {
           </div>
         </div>
 
-        {/* Status badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6 animate-fade-in">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6">
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
           <span className="text-sm text-gray-400">In Ausbildung zum Fachinformatiker</span>
         </div>
@@ -240,14 +189,9 @@ function Hero() {
           @{profile.username}
         </a>
 
-        <p className="text-xl md:text-2xl text-gray-400 mb-3 font-light">
-          {profile.title}
-        </p>
-        <p className="text-lg text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-          {profile.tagline}
-        </p>
+        <p className="text-xl md:text-2xl text-gray-400 mb-3 font-light">{profile.title}</p>
+        <p className="text-lg text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">{profile.tagline}</p>
 
-        {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-4">
           <a
             href="#projects"
@@ -268,7 +212,6 @@ function Hero() {
           </a>
         </div>
 
-        {/* Scroll indicator */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block">
           <ChevronDown className="w-6 h-6 text-gray-600 animate-bounce" />
         </div>
@@ -278,6 +221,15 @@ function Hero() {
 }
 
 function About() {
+  const { user } = useGitHubUser();
+
+  const dynamicStats = [
+    { label: 'Repositories', value: user ? String(user.public_repos) : '…' },
+    { label: 'Lehrjahr', value: '1. Jahr' },
+    { label: 'Ausbildung', value: 'Systemintegration' },
+    { label: 'Weg', value: 'Umschulung' },
+  ];
+
   return (
     <section id="about" className="py-24 relative">
       <div className="max-w-6xl mx-auto px-6">
@@ -294,14 +246,13 @@ function About() {
               </span>
             </h2>
             <p className="text-gray-400 text-lg leading-relaxed mb-6">
-              {profile.bio}
+              {user?.bio ?? profile.bio}
             </p>
             <div className="flex items-center gap-2 text-gray-500 mb-6">
               <MapPin className="w-4 h-4" />
-              <span>{profile.location}</span>
+              <span>{user?.location ?? 'Germany'}</span>
             </div>
 
-            {/* Interests */}
             <div className="mb-8">
               <h3 className="text-sm font-medium text-gray-500 mb-3 uppercase tracking-wider">Interessen</h3>
               <div className="flex flex-wrap gap-3">
@@ -322,22 +273,20 @@ function About() {
               </div>
             </div>
 
-            {/* Goal */}
             <div className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-blue-500/5 border border-emerald-500/20">
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-5 h-5 text-emerald-400" />
                 <h3 className="text-white font-semibold">Mein Ziel nach der Ausbildung</h3>
               </div>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Spezialisierung auf IT-Sicherheit – mein naechster grosser Schritt.
+                Spezialisierung auf IT-Sicherheit – mein nächster großer Schritt.
               </p>
             </div>
           </div>
 
           <div className="space-y-6">
-            {/* Stats card */}
             <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, i) => (
+              {dynamicStats.map((stat, i) => (
                 <div
                   key={stat.label}
                   className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-blue-500/30 transition-all duration-300 hover:scale-105"
@@ -354,36 +303,53 @@ function About() {
               ))}
             </div>
 
-            {/* Education */}
+            {user && (
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10">
+                <div className="flex items-center gap-2 mb-3">
+                  <Github className="w-5 h-5 text-blue-400" />
+                  <h3 className="text-white font-semibold">GitHub Stats</h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { icon: BookOpen, label: 'Repos', value: user.public_repos },
+                    { icon: Users, label: 'Followers', value: user.followers },
+                    { icon: Users, label: 'Following', value: user.following },
+                  ].map((s) => (
+                    <div key={s.label} className="text-center">
+                      <p className="text-xl font-bold text-white">{s.value}</p>
+                      <p className="text-xs text-gray-500">{s.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="p-5 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10">
               <div className="flex items-center gap-2 mb-3">
                 <GraduationCap className="w-5 h-5 text-blue-400" />
                 <h3 className="text-white font-semibold">Ausbildung</h3>
               </div>
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Beruf</span>
-                  <span className="text-white">Fachinformatiker für Systemintegration</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Art</span>
-                  <span className="text-white">Umschulung</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Lehrjahr</span>
-                  <span className="text-white">1. Jahr</span>
-                </div>
+                {[
+                  { label: 'Beruf', value: 'Fachinformatiker für Systemintegration' },
+                  { label: 'Art', value: 'Umschulung' },
+                  { label: 'Lehrjahr', value: '1. Jahr' },
+                ].map((row) => (
+                  <div key={row.label} className="flex justify-between gap-4">
+                    <span className="text-gray-400 shrink-0">{row.label}</span>
+                    <span className="text-white text-right">{row.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Languages */}
             <div className="p-5 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10">
               <div className="flex items-center gap-2 mb-4">
                 <Languages className="w-5 h-5 text-blue-400" />
                 <h3 className="text-white font-semibold">Sprachen</h3>
               </div>
               <div className="space-y-3">
-                {languages.map((lang) => (
+                {spokenLanguages.map((lang) => (
                   <div key={lang.name} className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{lang.flag}</span>
@@ -425,7 +391,6 @@ function Skills() {
           </h2>
         </div>
 
-        {/* Skill bars */}
         <div className="grid md:grid-cols-2 gap-x-12 gap-y-6 mb-16">
           {skills.map((skill, i) => (
             <div key={skill.name} className="space-y-2">
@@ -446,7 +411,6 @@ function Skills() {
           ))}
         </div>
 
-        {/* Tech tags */}
         <div className="flex flex-wrap justify-center gap-3">
           {techStack.map((tech, i) => (
             <span
@@ -463,7 +427,84 @@ function Skills() {
   );
 }
 
+function RepoCard({ repo }: { repo: GithubRepo }) {
+  const timeAgo = (dateStr: string) => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const days = Math.floor(diff / 86400000);
+    if (days < 1) return 'heute';
+    if (days < 7) return `vor ${days}d`;
+    if (days < 30) return `vor ${Math.floor(days / 7)}w`;
+    if (days < 365) return `vor ${Math.floor(days / 30)}mo`;
+    return `vor ${Math.floor(days / 365)}j`;
+  };
+
+  return (
+    <a
+      href={repo.html_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-blue-500/30 transition-all duration-300 hover:scale-[1.02] overflow-hidden flex flex-col"
+    >
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-600/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="relative flex-1">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <Github className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors shrink-0" />
+            <h3 className="text-base font-semibold text-white group-hover:text-blue-400 transition-colors truncate">
+              {repo.name}
+            </h3>
+          </div>
+          <ArrowUpRight className="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 ml-2" />
+        </div>
+
+        <p className="text-gray-400 text-sm leading-relaxed mb-4 line-clamp-2">
+          {repo.description ?? 'Kein Beschreibungstext vorhanden.'}
+        </p>
+
+        {repo.topics.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {repo.topics.slice(0, 4).map((topic) => (
+              <span
+                key={topic}
+                className="px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium"
+              >
+                {topic}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4 text-sm text-gray-500 pt-3 border-t border-white/5 mt-auto">
+        {repo.language && (
+          <div className="flex items-center gap-1.5">
+            <span
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: languageColors[repo.language] ?? '#8b949e' }}
+            />
+            {repo.language}
+          </div>
+        )}
+        <div className="flex items-center gap-1.5">
+          <Star className="w-4 h-4" />
+          {repo.stargazers_count}
+        </div>
+        <div className="flex items-center gap-1.5">
+          <GitFork className="w-4 h-4" />
+          {repo.forks_count}
+        </div>
+        <span className="ml-auto">{timeAgo(repo.updated_at)}</span>
+      </div>
+    </a>
+  );
+}
+
 function Projects() {
+  const { repos, loading, error } = useGitHubRepos();
+  const [showAll, setShowAll] = useState(false);
+
+  const displayed = showAll ? repos : repos.slice(0, 6);
+
   return (
     <section id="projects" className="py-24 relative">
       <div className="max-w-6xl mx-auto px-6">
@@ -473,88 +514,69 @@ function Projects() {
             PROJECTS
           </div>
           <h2 className="text-4xl font-bold text-white">
-            Featured{' '}
+            GitHub{' '}
             <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
               Repositories
             </span>
           </h2>
+          <p className="text-gray-500 text-sm mt-3 flex items-center justify-center gap-1.5">
+            <RefreshCw className="w-3.5 h-3.5" />
+            Live von GitHub – automatisch aktualisiert
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <a
-              key={project.name}
-              href={project.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative p-6 rounded-2xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10 hover:border-blue-500/30 transition-all duration-300 hover:scale-[1.02] overflow-hidden"
-            >
-              {/* Hover glow */}
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-blue-600/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {loading && (
+          <div className="grid md:grid-cols-2 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-52 rounded-2xl bg-white/5 border border-white/10 animate-pulse" />
+            ))}
+          </div>
+        )}
 
-              <div className="relative">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Github className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
-                    <h3 className="text-lg font-semibold text-white group-hover:text-blue-400 transition-colors">
-                      {project.name}
-                    </h3>
-                  </div>
-                  <ArrowUpRight className="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-                </div>
+        {error && (
+          <div className="text-center py-12 text-gray-500">
+            <Github className="w-12 h-12 mx-auto mb-4 opacity-30" />
+            <p>Repositories konnten nicht geladen werden.</p>
+            <p className="text-sm mt-1 text-gray-600">{error}</p>
+          </div>
+        )}
 
-                <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                  {project.description}
-                </p>
+        {!loading && !error && repos.length === 0 && (
+          <div className="text-center py-12 text-gray-500">
+            Keine öffentlichen Repositories gefunden.
+          </div>
+        )}
 
-                {/* Topics */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {project.topics.map((topic) => (
-                    <span
-                      key={topic}
-                      className="px-2.5 py-1 rounded-md bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
+        {!loading && !error && repos.length > 0 && (
+          <>
+            <div className="grid md:grid-cols-2 gap-6">
+              {displayed.map((repo) => (
+                <RepoCard key={repo.id} repo={repo} />
+              ))}
+            </div>
 
-                {/* Footer */}
-                <div className="flex items-center gap-4 text-sm text-gray-500 pt-3 border-t border-white/5">
-                  <div className="flex items-center gap-1.5">
-                    <span
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: languageColors[project.language] || '#8b949e' }}
-                    />
-                    {project.language}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Star className="w-4 h-4" />
-                    {project.stars}
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <GitFork className="w-4 h-4" />
-                    {project.forks}
-                  </div>
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-
-        {/* View all */}
-        <div className="text-center mt-10">
-          <a
-            href={profile.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium transition-all border border-white/10 hover:border-white/20"
-          >
-            <Github className="w-5 h-5" />
-            Alle Repositories ansehen
-            <ArrowUpRight className="w-4 h-4" />
-          </a>
-        </div>
+            <div className="text-center mt-10 flex flex-wrap gap-4 justify-center">
+              {repos.length > 6 && (
+                <button
+                  onClick={() => setShowAll(!showAll)}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium transition-all border border-white/10 hover:border-white/20"
+                >
+                  {showAll ? 'Weniger anzeigen' : `Alle ${repos.length} Repositories anzeigen`}
+                </button>
+              )}
+              <a
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium transition-all border border-white/10 hover:border-white/20"
+              >
+                <Github className="w-5 h-5" />
+                Auf GitHub öffnen
+                <ArrowUpRight className="w-4 h-4" />
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );
@@ -565,9 +587,7 @@ function Contact() {
     <section id="contact" className="py-24 relative">
       <div className="max-w-3xl mx-auto px-6 text-center">
         <div className="relative p-12 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] border border-white/10 overflow-hidden">
-          {/* Glow */}
           <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-600/15 rounded-full blur-3xl" />
-
           <div className="relative">
             <div className="inline-flex items-center gap-2 text-sm text-blue-400 font-medium mb-4">
               <Mail className="w-4 h-4" />
@@ -580,9 +600,8 @@ function Contact() {
               </span>
             </h2>
             <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
-              Ich bin offen für neue Projekte, Zusammenarbeit und interessante Gespraeche. Schreib mir gerne!
+              Ich bin offen für neue Projekte, Zusammenarbeit und interessante Gespräche. Schreib mir gerne!
             </p>
-
             <div className="flex flex-wrap items-center justify-center gap-4">
               <a
                 href={`mailto:${profile.email}`}
